@@ -1,5 +1,6 @@
 // app/api/auth/register/route.ts
-export const runtime = 'nodejs';
+export const runtime = 'edge';
+
 
 
 import { NextRequest, NextResponse } from "next/server"

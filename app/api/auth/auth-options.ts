@@ -1,5 +1,6 @@
 // app/api/auth/auth-options.ts
-export const runtime = 'nodejs';
+export const runtime = 'edge';
+
 
 
 import { NextAuthOptions } from "next-auth";
