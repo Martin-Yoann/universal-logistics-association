@@ -1,52 +1,74 @@
 // app/api/auth/auth-options.ts
 export const runtime = 'nodejs';
 
-import type { NextAuthOptions } from "next-auth"; // ← 这里改成 next-auth
+import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
+// 确保环境变量存在，否则直接报错
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
+if (!NEXTAUTH_SECRET) {
+  throw new Error("Missing NEXTAUTH_SECRET environment variable");
+}
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+  throw new Error("Missing Google OAuth environment variables");
+}
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+  throw new Error("Missing GitHub OAuth environment variables");
+}
+
+// 扩展 JWT Token 类型
+interface MyToken {
+  id?: string;
+  email?: string;
+  [key: string]: any;
+}
+
 export const authOptions: NextAuthOptions = {
-  // Edge Runtime 必须使用 JWT
+  // 使用 JWT
   session: {
     strategy: "jwt",
   },
-  // 必须设置 secret
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: NEXTAUTH_SECRET,
 
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
     }),
-    // 可以继续添加更多 OAuth 提供商
   ],
 
-  // 可选：调试信息（开发环境下）
   debug: process.env.NODE_ENV === "development",
 
-  // JWT 配置（可自定义）
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 天
   },
 
-  // 可选回调函数
   callbacks: {
-    async jwt({ token, user, account }) {
+    // 在 JWT 中存储用户信息
+    async jwt({ token, user }) {
+      const t = token as MyToken;
       if (user) {
-        token.id = (user as any).id ?? "";
-        token.email = user.email ?? "";
+        t.id = (user as any).id ?? "";
+        t.email = user.email ?? "";
       }
-      return token;
+      return t;
     },
+    // 在 session 中返回用户信息
     async session({ session, token }) {
+      const t = token as MyToken;
       session.user = {
         ...session.user,
-        id: token.id as string,
-        email: token.email as string,
+        id: t.id ?? "",
+        email: t.email ?? "",
       };
       return session;
     },
