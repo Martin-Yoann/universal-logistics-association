@@ -1,5 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
-export const runtime = 'edge';
+export const runtime = 'nodejs'; // 默认可省略
 
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
