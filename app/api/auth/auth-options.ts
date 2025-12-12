@@ -1,5 +1,5 @@
 // app/api/auth/auth-options.ts
-import type { NextAuthOptions } from "@next-auth/edge";
+import type { NextAuthOptions } from "next-auth"; // ← 这里改成 next-auth
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
@@ -34,15 +34,13 @@ export const authOptions: NextAuthOptions = {
   // 可选回调函数
   callbacks: {
     async jwt({ token, user, account }) {
-      // 第一次登录，把 user 信息加入 token
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
+        token.id = (user as any).id ?? "";
+        token.email = user.email ?? "";
       }
       return token;
     },
     async session({ session, token }) {
-      // 把 token 信息暴露到 session
       session.user = {
         ...session.user,
         id: token.id as string,
