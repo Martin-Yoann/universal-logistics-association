@@ -1,4 +1,6 @@
 // app/api/auth/register/route.ts
+export const runtime = 'edge';
+
 import { NextRequest, NextResponse } from "next/server"
 import { userStore } from '@/lib/users'
 

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import Banner from '../../components/Banner';
 import AboutSection from '../../components/sections/AboutSection';
 import ImpactSection from '../../components/sections/ImpactSection';

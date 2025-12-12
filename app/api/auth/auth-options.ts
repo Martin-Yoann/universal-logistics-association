@@ -1,4 +1,6 @@
 // app/api/auth/auth-options.ts
+export const runtime = 'edge';
+
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { userStore } from '@/lib/users';
