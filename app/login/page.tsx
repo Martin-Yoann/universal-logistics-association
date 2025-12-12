@@ -1,5 +1,6 @@
 // app/login/page.tsx - 双模式登录注册页面
 'use client';
+export const runtime = 'nodejs';
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";

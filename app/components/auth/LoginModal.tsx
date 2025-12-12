@@ -1,5 +1,6 @@
 // app/components/auth/LoginModal.tsx
 'use client';
+export const runtime = 'nodejs';
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
