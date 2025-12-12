@@ -1,90 +1,54 @@
 // app/api/auth/auth-options.ts
-export const runtime = 'edge';
-
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { userStore } from '@/lib/users';
+import type { NextAuthOptions } from "@next-auth/edge";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 
 export const authOptions: NextAuthOptions = {
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email", placeholder: "user@example.com" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials');
-            return null;
-          }
-
-          // 校验用户
-          const user = userStore.verifyUser(credentials.email, credentials.password);
-          if (!user) {
-            console.log('Invalid credentials for:', credentials.email);
-            return null;
-          }
-
-          console.log('User authorized:', user.email);
-
-          // 返回用户对象，可扩展属性如 role/image
-          return {
-            id: user.id,
-            name: user.name ?? null,
-            email: user.email ?? null,
-            image: user.image ?? null,
-            role: user.role ?? null,
-          };
-        } catch (error: any) {
-          console.error("Authorization error:", error.message);
-          return null;
-        }
-      },
-    }),
-  ],
-
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        const typedUser = user as typeof user & { role?: string | null; image?: string | null };
-        token.id = typedUser.id;
-        token.role = typedUser.role ?? null;
-        token.image = typedUser.image ?? null;
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string | null;
-        session.user.image = token.image as string | null;
-      }
-      return session;
-    },
-
-    async redirect({ url, baseUrl }) {
-      // 登录后重定向到 profile 页面
-      if (url.includes('/api/auth/signin') || url.includes('/login')) {
-        return `${baseUrl}/profile`;
-      }
-      return url.startsWith(baseUrl) ? url : baseUrl;
-    },
-  },
-
-  pages: {
-    signIn: "/login",
-    signOut: "/",
-    error: "/auth/error",
-  },
-
+  // Edge Runtime 必须使用 JWT
   session: {
     strategy: "jwt",
+  },
+  // 必须设置 secret
+  secret: process.env.NEXTAUTH_SECRET,
+
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    // 可以继续添加更多 OAuth 提供商
+  ],
+
+  // 可选：调试信息（开发环境下）
+  debug: process.env.NODE_ENV === "development",
+
+  // JWT 配置（可自定义）
+  jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 天
   },
 
-  secret: process.env.NEXTAUTH_SECRET ?? "dev-secret-key",
-  debug: process.env.NODE_ENV !== "production",
+  // 可选回调函数
+  callbacks: {
+    async jwt({ token, user, account }) {
+      // 第一次登录，把 user 信息加入 token
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // 把 token 信息暴露到 session
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        email: token.email as string,
+      };
+      return session;
+    },
+  },
 };
