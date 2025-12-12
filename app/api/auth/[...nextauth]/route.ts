@@ -1,4 +1,6 @@
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+
+
 
 import NextAuth from "next-auth";
 import { authOptions } from "../auth-options";

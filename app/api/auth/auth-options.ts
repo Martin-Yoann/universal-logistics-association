@@ -1,4 +1,6 @@
 // app/api/auth/auth-options.ts
+export const runtime = 'nodejs';
+
 import type { NextAuthOptions } from "next-auth"; // ← 这里改成 next-auth
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
