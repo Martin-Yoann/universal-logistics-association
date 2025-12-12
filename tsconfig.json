@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -11,24 +11,59 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
+    
+    // 关键：添加类型路径支持，让TypeScript能找到自定义类型
+    "typeRoots": ["./node_modules/@types", "./types"],
+    
+    // 优化：更好的模块解析
+    "moduleDetection": "force",
+    
+    // 关键：启用装饰器（如果使用Prisma等需要）
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // 优化：更严格的类型检查
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    
+    // Next.js插件配置
     "plugins": [
       {
         "name": "next"
       }
     ],
+    
+    // 路径别名
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": ["./*"],
+      // 可选：添加更多别名
+      "@/components/*": ["./app/components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/types/*": ["./types/*"]
+    },
+    
+    // 优化：Cloudflare Workers/Pages兼容性
+    "lib": ["dom", "dom.iterable", "es2022"]
   },
+  
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
+    "**/*.ts", 
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    // 确保types目录被包含
+    "types/**/*.d.ts",
+    // 确保Next.js类型被包含
+    "next-auth.d.ts"
   ],
-  "exclude": ["node_modules"]
+  
+  "exclude": ["node_modules", ".next", ".vercel", "dist", "build"]
 }

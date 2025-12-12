@@ -1,26 +1,142 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap');
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 自定义动画类 */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.animate-gradient {
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+/* 全局按钮优化 - 简单背景色 + 文字色 hover */
+button {
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease; /* 背景和文字颜色平滑过渡 */
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+}
+
+/* 默认背景为浅色 */
+button.bg-light {
+  background-color: #f3f4f6; /* 灰色背景 */
+  color: #1f2937; /* 深色文字 */
+}
+
+/* 禁用状态 */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 全局 a 标签优化 */
+a {
+  cursor: pointer;
+  transition: all 0.3s ease; /* 丝滑过渡 */
+  transform: translateZ(0); /* 提升动画性能 */
+  text-decoration: none; /* 如果你不想要下划线 */
+}
+
+a:hover {
+  transform: translateY(-2px) scale(1.02); /* 上移 + 放大 */
+  /* 保留原本背景颜色，不改变 */
+}
+
+a:active {
+  transform: translateY(0px) scale(0.98); /* 点击反馈 */
+}
+
+a:focus {
+  outline: none;
+}
+
+/* 自定义动画 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 自定义工具类 */
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(12px);
+}
+
+/* 平滑过渡 */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
