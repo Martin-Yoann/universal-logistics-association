@@ -1,58 +1,44 @@
 export const runtime = 'edge';
 
-
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
+// 模拟数据库更新函数
+async function updateUserProfile(email: string, data: any) {
+  // 这里你可以对接真实数据库，例如 Prisma / Supabase / MongoDB
+  // 返回更新后的用户数据
+  return { ...data, email };
+}
+
 export async function PUT(request: NextRequest) {
   try {
+    // 获取用户 session
     const session = await getServerSession();
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 解析请求体
     const body = await request.json();
-    const { name, email, phone, address, bio, website, location } = body;
+    const allowedFields = ["name", "phone", "address", "bio", "website", "location"];
+    
+    // 只取允许更新的字段，防止前端恶意修改
+    const updateData: Record<string, any> = {};
+    for (const key of allowedFields) {
+      if (body[key] !== undefined) updateData[key] = body[key];
+    }
 
-    // 在这里更新数据库中的用户信息
-    // 示例：使用你的数据库客户端
-    // const updatedUser = await db.user.update({
-    //   where: { email: session.user.email },
-    //   data: {
-    //     name,
-    //     phone,
-    //     address,
-    //     bio,
-    //     website,
-    //     location,
-    //     updatedAt: new Date(),
-    //   },
-    // });
+    // 模拟更新数据库
+    const updatedUser = await updateUserProfile(session.user.email, updateData);
 
-    // 返回成功响应
     return NextResponse.json({
       success: true,
       message: "Profile updated successfully",
-      user: {
-        name,
-        email,
-        phone,
-        address,
-        bio,
-        website,
-        location,
-      },
+      user: updatedUser,
     });
   } catch (error) {
     console.error("Update error:", error);
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }
