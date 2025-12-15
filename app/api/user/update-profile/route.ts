@@ -1,8 +1,7 @@
+export const runtime = 'edge';
+
+
 import { NextRequest, NextResponse } from "next/server";
-
-// ⚠️ Cloudflare Pages 不要使用 nodejs runtime
-// export const runtime = "nodejs";
-
 // 模拟数据库更新函数
 async function updateUserProfile(email: string, data: any) {
   // TODO: 这里对接真实数据库（Prisma / Supabase / MongoDB）
