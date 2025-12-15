@@ -105,16 +105,16 @@ export default function Navigation() {
 
                   {/* 加入我们 按钮 */}
                   <Link href="/routes/Join">
-                      <button
-                        className="flex items-center justify-center px-8 py-3 
+                    <button
+                      className="flex items-center justify-center px-8 py-3 
                    bg-gradient-to-r from-blue-600 to-blue-500 
                    hover:from-blue-700 hover:to-blue-600 
                    text-white rounded-xl shadow-lg hover:shadow-xl 
                    transition-all duration-300 font-bold"
-                      >
-                        Join Today
-                      </button>
-                    </Link>
+                    >
+                      Join Today
+                    </button>
+                  </Link>
                 </div>
               ) : (
                 // 用户未登录 - 显示登录按钮
