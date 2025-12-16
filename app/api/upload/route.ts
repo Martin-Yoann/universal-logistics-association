@@ -1,5 +1,5 @@
+export const runtime = 'edge'; 
 import { NextRequest, NextResponse } from 'next/server';
-
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -29,5 +29,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '上传失败' }, { status: 500 });
   }
 }
-
-export const runtime = 'nodejs'; // 重要：使用Node.js runtime
