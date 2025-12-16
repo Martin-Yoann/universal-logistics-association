@@ -3,30 +3,70 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // 基础配置
   reactStrictMode: true,
+  output: 'standalone',
   
   // 实验性功能配置
   experimental: {
-    reactCompiler: true, // React 编译器
-    // 其他实验性功能
-    // typedRoutes: true, // 类型化路由
-    // serverActions: { bodySizeLimit: '2mb' }, // 服务器操作
+    reactCompiler: true,
+    // 移除了不支持的 crossOriginIsolated 属性
   },
+
+  // 其余配置保持不变...
   
-  // 开发工具配置
-  turbopack: {
-    root: process.cwd()
+  // 针对 Cloudflare Pages 的 Webpack 配置（关键部分）
+  webpack: (config, { isServer, dev, webpack }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        stream: require.resolve('stream-browserify'),
+        crypto: require.resolve('crypto-browserify'),
+        path: require.resolve('path-browserify'),
+        fs: false,
+        os: false,
+        http: false,
+        https: false,
+        zlib: false,
+        net: false,
+        tls: false,
+        child_process: false,
+      };
+
+      config.plugins.push(
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+          Buffer: ['buffer', 'Buffer'],
+        })
+      );
+    }
+
+    config.module.rules.push({
+      test: /\.js$/,
+      include: /node_modules\/nodemailer/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env'],
+          plugins: ['@babel/plugin-transform-runtime'],
+        },
+      },
+    });
+
+    return config;
   },
-  
-  // 其他可选配置
+
+  env: {
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV || 'development',
+  },
+
   images: {
-    domains: [], // 允许的图片域名
+    domains: [],
   },
-  
-  // 编译选项
+
   compiler: {
-    // removeConsole: process.env.NODE_ENV === 'production', // 生产环境移除 console
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error'],
+    } : false,
   },
-  output: 'standalone',
 };
 
 export default nextConfig;
