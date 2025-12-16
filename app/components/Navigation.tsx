@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signIn, signOut, useSession } from "next-auth/react";
-import UserMenu from "../components/user";
+// 移除 NextAuth 导入，添加 Clerk 导入
+import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
+// import UserMenu from "../components/user";
+
 const navItems = [
   { name: "Home", path: "/" },
   { name: "Programs", path: "../routes/Programs" },
@@ -19,8 +21,8 @@ export default function Navigation() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
-  // 使用 NextAuth 的 useSession 获取用户会话状态
-  const { data: session, status } = useSession();
+  // 使用 Clerk 的 useUser 替换 NextAuth 的 useSession
+  const { user, isLoaded } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,10 +35,9 @@ export default function Navigation() {
   }, []);
 
   // 显示加载状态
-  if (status === "loading") {
+  if (!isLoaded) {
     return (
       <nav className="fixed top-0 left-0 right-0 z-50">
-        {/* 简化的加载状态导航栏 */}
         <div className="container mx-auto px-4 pt-4">
           <div className="flex justify-between items-center h-20 font-martel rounded-2xl px-8 bg-white/30 backdrop-blur-sm">
             <div className="flex items-center space-x-2">
@@ -52,13 +53,12 @@ export default function Navigation() {
     );
   }
 
-  // 用户已登录时的显示
-  const isAuthenticated = session?.user;
+  // 用户是否已登录
+  const isAuthenticated = !!user;
 
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50">
-        {/* 浮动导航容器 */}
         <div
           className={`container mx-auto px-4 transition-all duration-300 ${
             scrolled
@@ -79,6 +79,7 @@ export default function Navigation() {
                 <img className="w-50 h-20" src="/ULA-logo.svg" alt="ULA Logo" />
               </Link>
             </div>
+            
             {/* 导航菜单 */}
             <div className="hidden lg:flex items-center space-x-12">
               {navItems.map((item) => (
@@ -95,13 +96,27 @@ export default function Navigation() {
                 </Link>
               ))}
             </div>
+            
             {/* 用户状态按钮 */}
             <div className="flex items-center space-x-6">
               {isAuthenticated ? (
-                // 用户已登录 - 显示用户信息和登出按钮
+                // 用户已登录 - 显示 Clerk 用户按钮
                 <div className="flex items-center space-x-4">
-                  {/* 用户信息 */}
-                  <UserMenu session={session} />
+                  {/* Clerk 用户按钮 */}
+                  <div className="flex items-center">
+                    <UserButton 
+                      afterSignOutUrl="/"
+                      appearance={{
+                        elements: {
+                          avatarBox: "h-10 w-10",
+                          userButtonTrigger: "focus:shadow-lg"
+                        }
+                      }}
+                    />
+                    <span className="ml-2 text-gray-700 font-medium hidden md:block">
+                      {user.firstName || user.username || "用户"}
+                    </span>
+                  </div>
 
                   {/* 加入我们 按钮 */}
                   <Link href="/routes/Join">
@@ -117,22 +132,21 @@ export default function Navigation() {
                   </Link>
                 </div>
               ) : (
-                // 用户未登录 - 显示登录按钮
+                // 用户未登录 - 显示 Clerk 登录按钮
                 <>
                   <div className="flex space-x-4">
-                    {/* 浅灰色毛玻璃按钮 - Sign In */}
-                    {/* 半透明毛玻璃按钮 - Sign In */}
-                    <button
-                      onClick={() => signIn()}
-                      className="flex items-center justify-center px-8 py-3 
-             bg-white/20 backdrop-blur-md text-gray-800 
-             hover:text-blue-600 hover:blue-700
-             rounded-xl shadow-lg hover:shadow-xl 
-             transition-all duration-300 font-semibold cursor-pointer border border-white/30"
-                    >
-                      <span className="text-lg">Sign In</span>
-                      <div className="p-2.5 rounded-xl hidden md:block"></div>
-                    </button>
+                    {/* Clerk 登录按钮 */}
+                    <SignInButton mode="modal">
+                      <button
+                        className="flex items-center justify-center px-8 py-3 
+                         bg-white/20 backdrop-blur-md text-gray-800 
+                         hover:text-blue-600 hover:blue-700
+                         rounded-xl shadow-lg hover:shadow-xl 
+                         transition-all duration-300 font-semibold cursor-pointer border border-white/30"
+                      >
+                        <span className="text-lg">Sign In</span>
+                      </button>
+                    </SignInButton>
 
                     {/* 蓝色渐变按钮 - Join Today */}
                     <Link href="/routes/Join">
@@ -154,7 +168,7 @@ export default function Navigation() {
         </div>
       </nav>
       {/* 为固定导航栏预留的空间 */}
-      <div className="h-32"></div> {/* 根据你的导航栏实际高度调整 */}
+      <div className="h-32"></div>
     </>
   );
 }

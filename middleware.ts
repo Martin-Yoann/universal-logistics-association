@@ -1,15 +1,10 @@
-import { withAuth } from "next-auth/middleware";
+// middleware.ts
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
-export default withAuth({
-  pages: {
-    signIn: "/",
-  },
-});
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
-    "/profile/:path*",
-    "/dashboard/:path*",
-    // 添加其他需要保护的路径
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

@@ -3,8 +3,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Inter } from "next/font/google";
 import Navigation from "./components/Navigation";
-import Footer from "../app/components/Fotter"; // 导入页脚组件
+import Footer from "./components/Fotter"; // 注意这里可能是拼写错误，应该是 Footer
 import StyledComponentsRegistry from "./antd-registry";
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
+        <ClerkProvider> {/* 这里已经包含了 ClerkProvider */}
           <StyledComponentsRegistry>
             <div className="flex flex-col min-h-screen">
               {/* 导航栏 - 固定定位 */}
@@ -34,7 +35,7 @@ export default function RootLayout({
               </nav>
 
               {/* 为导航栏预留空间的主内容区 */}
-              <div className="flex-grow "> {/* 添加 pt-16 为固定导航栏留出空间 */}
+              <div className="flex-grow pt-16"> {/* 添加 pt-16 为固定导航栏留出空间 */}
                 <main className="min-h-[calc(100vh-16rem)]">
                   {children}
                 </main>
@@ -44,7 +45,7 @@ export default function RootLayout({
               <Footer />
             </div>
           </StyledComponentsRegistry>
-        </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );
