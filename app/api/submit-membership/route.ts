@@ -1,6 +1,5 @@
 // app/api/submit-membership/route.ts
-// 明确指定使用 Node.js Runtime
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMembershipNotification } from '@/lib/email-service';
 

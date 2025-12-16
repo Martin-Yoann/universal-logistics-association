@@ -1,4 +1,5 @@
 // app/api/upload/route.ts
+export const runtime = 'edge';
 import { R2Bucket } from '@cloudflare/workers-types/experimental';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -72,5 +73,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '上传失败', details: (error as Error).message }, { status: 500 });
   }
 }
-
-export const runtime = 'nodejs';
