@@ -1,6 +1,12 @@
+# wrangler.toml
 name = "universal-logistics-association"
 compatibility_date = "2024-12-16"
 pages_build_output_dir = ".vercel/output/static"
+
+[[d1_databases]]
+binding = "DB"  # 在代码中使用的变量名
+database_name = "membership-db"
+database_id = "92be9f6bad101c67b340c554d40354eb"  # 替换为你的数据库ID
 
 [[r2_buckets]]
 binding = "R2_STORAGE"
