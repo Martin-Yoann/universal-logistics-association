@@ -49,7 +49,7 @@
     },
     
     // 优化：Cloudflare Workers/Pages兼容性
-    "lib": ["dom", "dom.iterable", "es2022"]
+    // "lib": ["dom", "dom.iterable", "es2022"]
   },
   
   "include": [

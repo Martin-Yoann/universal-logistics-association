@@ -1,0 +1,7 @@
+name = "universal-logistics-association"
+compatibility_date = "2024-12-16"
+pages_build_output_dir = ".vercel/output/static"
+
+[[r2_buckets]]
+binding = "R2_STORAGE"
+bucket_name = "universelogisticsassociation"
