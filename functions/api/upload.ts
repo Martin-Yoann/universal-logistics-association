@@ -1,10 +1,7 @@
-// app/api/upload/route.ts
 export const runtime = 'nodejs';
-
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
-
 /* -------------------- env utils -------------------- */
 function requiredEnv(name: string): string {
   const value = process.env[name];

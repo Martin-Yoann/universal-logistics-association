@@ -11,27 +11,27 @@ export default function ProgramsPage() {
     {
       title: "Warehouse Excellence Program",
       desc: "Comprehensive guidance on warehouse layout, WMS utilization, inventory optimization, audit preparation, hazard control and safety performance.",
-      image: "/programs/bobrov.jpg",
+      image: "/Programs/bobrov.jpg",
     },
     {
       title: "Logistics Operations Network",
       desc: "Support for transportation planning, dispatch operations, last-mile optimization, fleet routing, regional logistics strategy and multi-region distribution.",
-      image: "/programs/irwandoko.jpg",
+      image: "/Programs/irwandoko.jpg",
     },
     {
       title: "Supply Chain Innovation Lab",
       desc: "Research and advisory on automation, robotics, AI-driven forecasting, IoT sensors, visibility platforms, digital twins and next-generation fulfillment.",
-      image: "/programs/thejuanmarco.jpg",
+      image: "/Programs/thejuanmarco.jpg",
     },
     {
       title: "Compliance & Risk Governance Center",
       desc: "Updates and guidance on DOT, OSHA, FMCSA, Hazmat, warehouse licensing, safety policies, liability mitigation and regulatory standards.",
-      image: "/programs/nguyen.jpg",
+      image: "/Programs/nguyen.jpg",
     },
     {
       title: "Industry Standards & Benchmarking",
       desc: "Shared frameworks, KPI scorecards, performance benchmarks and operational models across ULA member organizations.",
-      image: "/programs/pedersen.jpg",
+      image: "/Programs/pedersen.jpg",
     },
   ];
 
