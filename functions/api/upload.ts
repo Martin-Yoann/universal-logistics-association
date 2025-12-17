@@ -1,55 +1,45 @@
+import { NextRequest, NextResponse } from "next/server";
+
+// 使用 Edge Runtime（Cloudflare Workers）
 export const runtime = "edge";
-import { R2Bucket } from '@cloudflare/workers-types';
-import { randomUUID } from 'crypto';
-import { NextResponse } from 'next/server';
 
-// 如果你在 Pages Functions 中绑定 R2
-const BUCKET: R2Bucket = (globalThis as any).R2_BUCKET;
+// 修复：正确获取 R2 Bucket 实例
+// 注意：在 Cloudflare Workers 中，R2 绑定通常通过环境变量访问
+const getR2Bucket = () => {
+  // @ts-ignore - Cloudflare Workers 全局绑定
+  return process.env.R2_BUCKET_NAME ? R2_BUCKET : null;
+};
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'];
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file');
 
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: '没有文件' }, { status: 400 });
+    const file = formData.get("file") as File;
+    const text = formData.get("text") as string;
+
+    if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+
+    // 获取 R2 存储桶实例
+    const bucket = getR2Bucket();
+    if (!bucket) {
+      return NextResponse.json({ error: "R2 bucket not configured" }, { status: 500 });
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: '文件过大，最大 10MB' }, { status: 400 });
-    }
+    const arrayBuffer = await file.arrayBuffer();
+    const fileName = file.name;
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: '不支持的文件类型' }, { status: 400 });
-    }
-    
-    // 安全生成文件名
-    const ext = file.name.includes('.') ? file.name.split('.').pop() : 'bin';
-    const objectKey = `uploads/${randomUUID()}.${ext}`;
-
-    // 使用 arrayBuffer 替代 stream 避免类型冲突
-    const buffer = await file.arrayBuffer();
-
-    await BUCKET.put(objectKey, buffer, {
+    // 上传到 R2
+    await bucket.put(fileName, arrayBuffer, {
       httpMetadata: { contentType: file.type },
-      customMetadata: { originalName: file.name },
     });
-
-    const PUBLIC_BASE_URL = process.env.R2_PUBLIC_BASE_URL;
-    const fileUrl = `${PUBLIC_BASE_URL}/${objectKey}`;
 
     return NextResponse.json({
-      success: true,
-      url: fileUrl,
-      key: objectKey,
-      size: file.size,
-      type: file.type,
+      message: "Upload successful",
+      text,
+      fileUrl: `https://${process.env.R2_BUCKET_DOMAIN}/${fileName}`,
     });
-  } catch (error: any) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: '上传失败', message: error.message }, { status: 500 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
