@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 
 import { NextRequest, NextResponse } from "next/server";
 // 模拟数据库更新函数

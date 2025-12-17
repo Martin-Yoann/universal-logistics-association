@@ -1,5 +1,6 @@
 // app/api/submit-membership/route.ts
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { sendMembershipNotification } from '@/lib/email-service';
 

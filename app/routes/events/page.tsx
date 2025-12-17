@@ -1,6 +1,4 @@
 "use client";
-export const runtime = 'edge';
-
 import { motion } from "framer-motion";
 
 export default function EventsPage() {

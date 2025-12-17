@@ -1,75 +1,85 @@
 // app/api/upload/route.ts
-export const runtime = 'edge';
-import { R2Bucket } from '@cloudflare/workers-types/experimental';
-import { NextRequest, NextResponse } from 'next/server';
+export const runtime = 'nodejs';
 
-// 仅在开发环境中导入wrangler，生产环境打包时会排除此依赖
-let getPlatformProxy: any;
-if (process.env.NODE_ENV === 'development') {
-  import('wrangler').then((module) => {
-    getPlatformProxy = module.getPlatformProxy;
-  });
+import { NextResponse } from 'next/server';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { randomUUID } from 'crypto';
+
+/* -------------------- env utils -------------------- */
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value;
 }
-// 定义R2存储桶的绑定名称，需与wrangler.toml配置一致
-const R2_BINDING_NAME = 'MY_R2_BUCKET'; // 请将此名称替换为你的实际绑定名
 
-export async function POST(request: NextRequest) {
+/* -------------------- R2 client -------------------- */
+const r2 = new S3Client({
+  region: 'auto', // Cloudflare R2 推荐 'auto'
+  endpoint: requiredEnv('R2_ENDPOINT'), // 注意：不要用 r2.dev 公共开发 URL
+  credentials: {
+    accessKeyId: requiredEnv('R2_ACCESS_KEY_ID'),
+    secretAccessKey: requiredEnv('R2_SECRET_ACCESS_KEY'),
+  },
+});
+
+/* -------------------- config -------------------- */
+const BUCKET_NAME = requiredEnv('R2_BUCKET_NAME');
+const PUBLIC_BASE_URL = requiredEnv('R2_PUBLIC_BASE_URL'); // 生产环境可以是自定义域
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'];
+
+/* -------------------- handler -------------------- */
+export async function POST(req: Request) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const fileName = formData.get('fileName') as string;
+    const formData = await req.formData();
+    const file = formData.get('file');
 
-    if (!file) {
+    if (!(file instanceof File)) {
       return NextResponse.json({ error: '没有文件' }, { status: 400 });
     }
 
-    // 1. 获取R2存储桶实例（根据环境动态获取）
-    let r2Bucket: R2Bucket;
-    if (process.env.NODE_ENV === 'development') {
-      // 本地开发：使用getPlatformProxy获取模拟R2
-      const { env } = await getPlatformProxy();
-      r2Bucket = env[R2_BINDING_NAME];
-    } else {
-      // 线上生产：从Cloudflare Pages/Workers环境获取真实R2绑定
-      // 注意：这需要你的Next.js应用部署在Cloudflare Pages上并使用适配器
-      const env = (request as any).env || (request as any).ctx?.env;
-      if (!env) {
-        throw new Error('线上环境未找到R2绑定，请确认部署配置。');
-      }
-      r2Bucket = env[R2_BINDING_NAME];
+    // 文件大小限制
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: '文件过大，最大 10MB' }, { status: 400 });
     }
 
-    // 2. 将文件转换为Buffer以便上传
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
+    // MIME 校验
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: '不支持的文件类型' }, { status: 400 });
+    }
 
-    // 3. 上传到R2存储桶
-    // 生成唯一对象键（路径），可以包含时间戳和文件名
-    const objectKey = `uploads/${Date.now()}_${fileName || file.name}`;
-    await r2Bucket.put(objectKey, buffer, {
-      httpMetadata: {
-        contentType: file.type || 'application/octet-stream',
-      },
-    });
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // 4. 构造文件的访问URL
-    // 注意：R2存储桶默认私有，此URL不可直接公开访问。
-    // 如需公开访问，需要配置存储桶为公开，或通过Worker生成预签名URL。
-    const fileUrl = `https://pub-<your-account-id>.r2.dev/${objectKey}`; // 公开存储桶示例
-    // 或者使用你的自定义域名（如果配置了R2自定义域）:
-    // const fileUrl = `https://assets.yourdomain.com/${objectKey}`;
+    // 安全生成扩展名
+    const ext = file.name.includes('.') ? file.name.split('.').pop() : 'bin';
+    const objectKey = `uploads/${randomUUID()}.${ext}`;
 
+    // 上传到 R2
+    await r2.send(
+      new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: objectKey,
+        Body: buffer,
+        ContentType: file.type,
+        CacheControl: 'public, max-age=31536000',
+      })
+    );
+
+    // 返回上传后的可访问 URL
     return NextResponse.json({
       success: true,
-      url: fileUrl,
-      objectKey: objectKey,
-      fileName: fileName || file.name,
+      url: `${PUBLIC_BASE_URL}/${objectKey}`,
+      key: objectKey,
       size: file.size,
       type: file.type,
     });
-
-  } catch (error) {
-    console.error('上传错误:', error);
-    return NextResponse.json({ error: '上传失败', details: (error as Error).message }, { status: 500 });
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    return NextResponse.json(
+      { error: '上传失败', message: error.message },
+      { status: 500 }
+    );
   }
 }

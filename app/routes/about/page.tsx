@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import Accordion from "../../components/Accordion";
 import WorldMap from "../..//components/WorldMap";
 export default function AboutPage() {

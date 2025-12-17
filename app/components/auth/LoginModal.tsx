@@ -1,8 +1,5 @@
 // app/components/auth/LoginModal.tsx
 'use client';
-export const runtime = 'edge';
-
-
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
