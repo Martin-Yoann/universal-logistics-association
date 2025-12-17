@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation';
+// app/page.tsx
+import HomePage from './home/page';
 
-export default function Home() {
-  redirect('/home');
+export default function Page() {
+  return <HomePage />; // 直接渲染 /home 页面内容
 }

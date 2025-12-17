@@ -75,7 +75,7 @@ export default function Navigation() {
           >
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <Link href="/home" className="inline-block">
+              <Link href="/" className="inline-block">
                 <img className="w-50 h-20" src="/ULA-logo.svg" alt="ULA Logo" />
               </Link>
             </div>
