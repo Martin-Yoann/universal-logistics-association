@@ -178,7 +178,7 @@ export default function AboutSection() {
             a fast-evolving industry.
           </p>
           <a
-            href="/routes/Join"
+            href="/Join"
             className="inline-block px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:-translate-y-1"
           >
             Get Started

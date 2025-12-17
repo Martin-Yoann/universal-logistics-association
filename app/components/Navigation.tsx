@@ -9,12 +9,12 @@ import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 
 const navItems = [
   { name: "Home", path: "/" },
-  { name: "Programs", path: "../routes/Programs" },
-  { name: "Membership", path: "../routes/membership" },
-  { name: "Insights", path: "../routes/Insightsr" },
-  { name: "Events", path: "../routes/events" },
-  { name: "Contact Us", path: "../routes/Contact" },
-  { name: "About Us", path: "../routes/about" },
+  { name: "Programs", path: "../Programs" },
+  { name: "Membership", path: "../membership" },
+  { name: "Insights", path: "../Insightsr" },
+  { name: "Events", path: "../events" },
+  { name: "Contact Us", path: "../Contact" },
+  { name: "About Us", path: "../about" },
 ];
 
 export default function Navigation() {
@@ -75,7 +75,7 @@ export default function Navigation() {
           >
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <Link href="/routes/home" className="inline-block">
+              <Link href="/home" className="inline-block">
                 <img className="w-50 h-20" src="/ULA-logo.svg" alt="ULA Logo" />
               </Link>
             </div>
@@ -119,7 +119,7 @@ export default function Navigation() {
                   </div>
 
                   {/* 加入我们 按钮 */}
-                  <Link href="/routes/Join">
+                  <Link href="/Join">
                     <button
                       className="flex items-center justify-center px-8 py-3 
                    bg-gradient-to-r from-blue-600 to-blue-500 
@@ -149,7 +149,7 @@ export default function Navigation() {
                     </SignInButton>
 
                     {/* 蓝色渐变按钮 - Join Today */}
-                    <Link href="/routes/Join">
+                    <Link href="/Join">
                       <button
                         className="flex items-center justify-center px-8 py-3 
                    bg-gradient-to-r from-blue-600 to-blue-500 

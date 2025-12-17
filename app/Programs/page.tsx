@@ -106,7 +106,7 @@ export default function ProgramsPage() {
         viewport={{ once: true }}
         className="text-center mt-20"
       >
-        <a href="/routes/Contact">
+        <a href="/Contact">
           <button className="px-12 py-4 bg-blue-600 text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-blue-700 transition duration-300 hover:shadow-xl active:scale-95 cursor-pointer">
             Contact Us for Program Access
           </button>

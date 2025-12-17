@@ -1,6 +1,6 @@
-import Banner from '../../components/Banner';
-import AboutSection from '../../components/sections/AboutSection';
-import ImpactSection from '../../components/sections/ImpactSection';
+import Banner from '../components/Banner';
+import AboutSection from '../components/sections/AboutSection';
+import ImpactSection from '../components/sections/ImpactSection';
 
 export default function HomePage() {
   return (
@@ -14,7 +14,7 @@ export default function HomePage() {
               "Global supply chains are evolving faster than ever. ULA empowers logistics and warehouse leaders with the standards, knowledge, and community needed to navigate change and improve operational excellence.",
             image: "/banner/banner.jpg",
             buttonText: "Learn More",
-            buttonLink: "/routes/about",
+            buttonLink: "/about",
           },
         ]}
       />

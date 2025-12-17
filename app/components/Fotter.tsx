@@ -33,7 +33,7 @@ export default function Footer() {
                 <ul className="space-y-2">
                   <li>
                     <a
-                      href="/routes/about"
+                      href="/about"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       About Us
@@ -41,7 +41,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/membership"
+                      href="/membership"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Membership
@@ -49,7 +49,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/events"
+                      href="/events"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Events
@@ -57,7 +57,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/Programs"
+                      href="/Programs"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Programs
@@ -71,7 +71,7 @@ export default function Footer() {
                 <ul className="space-y-2">
                   <li>
                     <a
-                      href="/routes/donate"
+                      href="/donate"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Donate
@@ -79,7 +79,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/volunteer"
+                      href="/volunteer"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Volunteer
@@ -87,7 +87,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/Member"
+                      href="/Member"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Become a Member
@@ -95,7 +95,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <a
-                      href="/routes/careers"
+                      href="/careers"
                       className="text-gray-400 hover:text-white transition-colors"
                     >
                       Careers
