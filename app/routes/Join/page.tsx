@@ -241,7 +241,7 @@ export default function MembershipApplicationPage() {
             viewport={{ once: true }}
           >
             <img
-              src="/join.png"
+              src="/Join.png"
               alt="Membership"
               className="w-full h-auto rounded-xl shadow-lg object-cover"
             />
