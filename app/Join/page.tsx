@@ -72,28 +72,37 @@ export default function MembershipApplicationPage() {
   };
 
   const uploadToR2 = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileName", file.name);
-    formData.append("fileType", file.type);
-
     try {
+      // 这里直接用 FormData 上传文件
+      const formData = new FormData();
+      formData.append("file", file); // file.stream() 会在后端处理
+  
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
+        // 尝试打印后端返回的错误信息
+        const errText = await response.text();
+        console.error("Upload failed response:", errText);
         throw new Error("Upload failed");
       }
-
+  
       const data = await response.json();
+  
+      if (!data.url) {
+        throw new Error("No URL returned from upload");
+      }
+  
       return data.url;
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
     }
   };
+  
+  
 
   const uploadAllFiles = async (): Promise<string[]> => {
     if (files.length === 0) return [];
