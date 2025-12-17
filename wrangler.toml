@@ -1,5 +1,5 @@
 name = "universelogisticsassociation"
-main = "src/index.ts"        # Worker 入口
+main = "app/index.ts"        # Worker 入口
 compatibility_date = "2025-12-17"
 
 # R2 绑定
