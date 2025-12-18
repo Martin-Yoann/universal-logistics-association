@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -9,7 +8,6 @@ const fadeUpVariant = {
 };
 
 type UploadStatus = "idle" | "uploading" | "success" | "error";
-
 export default function MembershipApplicationPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
@@ -26,7 +24,6 @@ export default function MembershipApplicationPage() {
     heardFrom: "",
   });
   const [submitted, setSubmitted] = useState(false);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -34,7 +31,6 @@ export default function MembershipApplicationPage() {
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
@@ -66,7 +62,6 @@ export default function MembershipApplicationPage() {
       setFiles((prev) => [...prev, ...validFiles]);
     }
   };
-
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
@@ -78,8 +73,6 @@ export default function MembershipApplicationPage() {
       formData.append("file", file); // file.stream() 会在后端处理
   
       const response = await fetch("/api/upload", { method: "POST", body: formData });
-
-  
       if (!response.ok) {
         // 尝试打印后端返回的错误信息
         const errText = await response.text();
@@ -636,7 +629,7 @@ export default function MembershipApplicationPage() {
               ) : (
                 "Submit Application"
               )}
-            </button>
+            </button> 
 
             <div className="text-xs text-gray-500 text-center pt-2">
               <p>
