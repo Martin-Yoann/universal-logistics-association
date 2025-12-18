@@ -44,7 +44,9 @@
       // 可选：添加更多别名
       "@/components/*": ["./app/components/*"],
       "@/lib/*": ["./lib/*"],
-      "@/types/*": ["./types/*"]
+      "@/types/*": ["./types/*"],
+      "@/functions/*": ["./functions/*"]
+
     },
     
     // 优化：Cloudflare Workers/Pages兼容性

@@ -2,11 +2,13 @@ name = "universelogisticsassociation"
 # main 不需要
 compatibility_date = "2025-12-17"
 
+
 # R2 绑定
 [[r2_buckets]]
 binding = "R2_BUCKET"
 bucket_name = "universelogisticsassociation"
 preview_bucket_name = "universelogisticsassociation"
+functions = "functions"
 
 # Pages 构建输出目录
 pages_build_output_dir = ".next"
