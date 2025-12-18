@@ -1,4 +1,4 @@
-// app/api/submit-membership/route.ts
+// submit-membership/route.ts
 export const runtime = "edge";
 
 import { NextRequest, NextResponse } from 'next/server';

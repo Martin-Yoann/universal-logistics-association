@@ -72,7 +72,7 @@ export default function MembershipApplicationPage() {
       const formData = new FormData();
       formData.append("file", file); // file.stream() 会在后端处理
   
-      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const response = await fetch("/upload", { method: "POST", body: formData });
       if (!response.ok) {
         // 尝试打印后端返回的错误信息
         const errText = await response.text();
@@ -140,7 +140,7 @@ export default function MembershipApplicationPage() {
         submittedAt: new Date().toISOString(),
       };
   
-      const response = await fetch("/api/submit-membership", {
+      const response = await fetch("/submit-membership", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),
@@ -154,7 +154,7 @@ export default function MembershipApplicationPage() {
       setSubmitted(true);
   
       // 可选：发送邮件
-      fetch("/api/send-email", {
+      fetch("/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),

@@ -76,7 +76,7 @@ export default function AuthPage() {
       }
 
       // 调用注册 API
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
