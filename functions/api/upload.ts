@@ -1,4 +1,4 @@
-export const onRequestPost: PagesFunction = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env }: any) => {
   try {
     // ① 是否进入了 Pages Function
     if (!env) {
@@ -7,7 +7,6 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       )
     }
-
     // ② 是否拿到 formData
     const formData = await request.formData()
     if (!formData) {
@@ -16,7 +15,6 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
-
     // ③ 是否有 file
     const file = formData.get('file')
     if (!(file instanceof File)) {
@@ -30,7 +28,6 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
     }
-
     // ④ 是否绑定了 R2
     const bucket = env.R2_BUCKET
     if (!bucket) {

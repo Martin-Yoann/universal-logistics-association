@@ -13,7 +13,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "types": ["@cloudflare/workers-types"],
     // 关键：添加类型路径支持，让TypeScript能找到自定义类型
     "typeRoots": ["./node_modules/@types", "./types"],
     
