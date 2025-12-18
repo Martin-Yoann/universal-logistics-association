@@ -1,45 +1,81 @@
-import { NextRequest, NextResponse } from "next/server";
-
-// 使用 Edge Runtime（Cloudflare Workers）
-export const runtime = "edge";
-
-// 修复：正确获取 R2 Bucket 实例
-// 注意：在 Cloudflare Workers 中，R2 绑定通常通过环境变量访问
-const getR2Bucket = () => {
-  // @ts-ignore - Cloudflare Workers 全局绑定
-  return process.env.R2_BUCKET_NAME ? R2_BUCKET : null;
-};
-
-export async function POST(req: NextRequest) {
+export const onRequestPost: PagesFunction = async ({ request, env }) => {
   try {
-    const formData = await req.formData();
-
-    const file = formData.get("file") as File;
-    const text = formData.get("text") as string;
-
-    if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-
-    // 获取 R2 存储桶实例
-    const bucket = getR2Bucket();
-    if (!bucket) {
-      return NextResponse.json({ error: "R2 bucket not configured" }, { status: 500 });
+    // ① 是否进入了 Pages Function
+    if (!env) {
+      return new Response(
+        JSON.stringify({ step: 'init', ok: false, error: 'No env object' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const fileName = file.name;
+    // ② 是否拿到 formData
+    const formData = await request.formData()
+    if (!formData) {
+      return new Response(
+        JSON.stringify({ step: 'formData', ok: false, error: 'No formData' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
 
-    // 上传到 R2
-    await bucket.put(fileName, arrayBuffer, {
+    // ③ 是否有 file
+    const file = formData.get('file')
+    if (!(file instanceof File)) {
+      return new Response(
+        JSON.stringify({
+          step: 'file',
+          ok: false,
+          error: 'File field missing or not a File',
+          receivedType: typeof file,
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // ④ 是否绑定了 R2
+    const bucket = env.R2_BUCKET
+    if (!bucket) {
+      return new Response(
+        JSON.stringify({
+          step: 'r2',
+          ok: false,
+          error: 'R2 bucket not bound',
+          envKeys: Object.keys(env),
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // ⑤ 写入 R2
+    const key = `test-${Date.now()}-${file.name}`
+    const buffer = await file.arrayBuffer()
+
+    await bucket.put(key, buffer, {
       httpMetadata: { contentType: file.type },
-    });
+    })
 
-    return NextResponse.json({
-      message: "Upload successful",
-      text,
-      fileUrl: `https://${process.env.R2_BUCKET_DOMAIN}/${fileName}`,
-    });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    // ✅ 成功
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        step: 'done',
+        key,
+        size: file.size,
+        type: file.type,
+        url: env.R2_PUBLIC_DOMAIN
+          ? `https://${env.R2_PUBLIC_DOMAIN}/${key}`
+          : null,
+      }),
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+  } catch (err: any) {
+    // ❌ 捕获所有异常
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        step: 'catch',
+        error: err?.message || String(err),
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    )
   }
 }
