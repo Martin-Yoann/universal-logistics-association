@@ -35,7 +35,7 @@ export default function RootLayout({
               </nav>
 
               {/* 为导航栏预留空间的主内容区 */}
-              <div className="flex-grow pt-16"> {/* 添加 pt-16 为固定导航栏留出空间 */}
+              <div className="flex-grow pt-0"> {/* 添加 pt-16 为固定导航栏留出空间 */}
                 <main className="min-h-[calc(100vh-16rem)]">
                   {children}
                 </main>
